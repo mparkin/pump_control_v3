@@ -26,7 +26,7 @@
 #include "BluetoothSerial.h"
 #include "VirtuinoCM.h" 
 
-#define POWERSWITCH 18
+#define POWERSWITCH 32
 BluetoothSerial espSerial;
 
 VirtuinoCM vbt;
@@ -59,8 +59,9 @@ void setup() {
   espSerial.begin("pump1");
   vbt.begin(onReceived,onRequested,256);
   Serial.println("Setup completed.");
-  pump1.initialize(4,7,5);
-  currentState = pump1.current();
+  pump1.initialize(19,21,22);
+  currentState = pump1.pumpState();
+  Serial.println(currentState);
   attachInterrupt(digitalPinToInterrupt(POWERSWITCH), switchIsr, RISING);
   sei();//allow interrupts again after setting everything up
 }
@@ -69,14 +70,13 @@ void loop() {
   virtuinoRun();                        //  neccesary command to communicate with Virtuino android app
   dir = HIGH;
   dir1 = LOW;
-  pumpSpeedRun = 120;
-  pumpSpeedSuck = 120;
-  pumpSpeedHold = 120;
+  pumpSpeedRun = 200;
+  pumpSpeedSuck = 255;
+  pumpSpeedHold = 5;
   cycles = 5;
   // end of dummy variables
-  
-  if ( currentState != pump1.current()) //the start stop interrupt will change pump1.,current to runFirst to start this
-  {    switch(pump1.current())           // the pump will run until the duration timer runs to zero then an ISR will change
+  if ( currentState != pump1.pumpState()) //the start stop interrupt will change pump1.,current to runFirst to start this
+  {    switch(pump1.pumpState())           // the pump will run until the duration timer runs to zero then an ISR will change
        {
            case RunFirst:
               pumpSpeedCurrent = pumpSpeedRun;
@@ -89,9 +89,12 @@ void loop() {
              
        }
        pump1.run(dir,dir1,pumpSpeedCurrent);   // pump1 state to runSecond
-       currentState = pump1.current();
+       currentState = pump1.pumpState();
+       Serial.println(currentState);
   }
-
+  while (Serial.available()) {
+     currentState=(state) Serial.read(); 
+  }
 };
 
 void goNextState()
@@ -115,6 +118,15 @@ void goNextState()
   }
 }
 
+
+void TimerIsr() //this is the function that occurs when the hardware interval timer hits zero
+{
+  //main function is to reload the timer conpare register, change the pump state and then restart the timer.
+  // the timer trimesout every 1 second. Then it decrements the runTime counter. 
+  // When runTime counter == 0, it sets the run state to next value.
+  runTime--; 
+  if (runTime <= 0 ) goNextState();
+};
 
 void switchIsr() // when the staurt/Stop switch is operated. 
 {
