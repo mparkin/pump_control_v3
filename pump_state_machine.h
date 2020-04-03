@@ -1,3 +1,7 @@
+#ifndef VARS
+#include "variables.h"
+#define VARS
+#endif
 
 enum state 
 {
@@ -45,7 +49,7 @@ void pumpState::newState(state reqState)
       if (Active == PowerOn)Active = reqState;
       break;
     case RunFirst:
-      if (Active == Idle)Active = reqState;
+      if (Active == Idle || Active == Hold)Active = reqState;
       break;
     case RunSecond:
       if (Active == RunFirst)Active = reqState;
@@ -59,4 +63,4 @@ void pumpState::newState(state reqState)
     default:
       Active = Active;
   };
-}
+};
