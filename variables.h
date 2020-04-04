@@ -25,8 +25,8 @@
 int counterDemo=0;
 
 
-float runTime1, runTime2, holdTime,runTime;       
-unsigned int   pumpSpeedCurrent,pumpSpeedRun,pumpSpeedSuck,pumpSpeedHold;
+static float runTime1, runTime2, holdTime,runTime;       
+static unsigned int   pumpSpeedCurrent,pumpSpeedRun,pumpSpeedSuck,pumpSpeedHold;
 int temperature;
 int humidity;
 float DHTperiod;

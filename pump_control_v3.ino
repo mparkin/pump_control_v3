@@ -13,11 +13,23 @@ pumpcontrols pump1;
 
 
 void setup() {
+ // Create semaphore to inform us when the timer has fired
+  timerSemaphore = xSemaphoreCreateBinary();
 
+  // Use 1st timer of 4 (counted from zero).
+  // Set 80 divider for prescaler (see ESP32 Technical Reference Manual for more
+  // info).
   timer = timerBegin(0, 80, true);
+
+  // Attach onTimer function to our timer.
   timerAttachInterrupt(timer, &onTimer, true);
-  timerAlarmWrite(timer, 1000000, true);
-  //timerAlarmEnable(timer);
+
+  // Set alarm to call onTimer function every second (value in microseconds).
+  // Repeat the alarm (third parameter)
+  timerAlarmWrite(timer, 100000, true);
+
+  // Start an alarm
+  timerAlarmEnable(timer);
 
   Serial.begin(115200);    
   espSerial.begin("pump1");                     // function in virtuino.h
@@ -36,6 +48,7 @@ void loop() {
   if ((runTime <= 0)||(currentState != pump1.pumpState()) )
   {
        goNextState();
+       Serial.println(pumpSpeedCurrent);
        pump1.run(dir,dir1,pumpSpeedCurrent);   // function in pump_functions.h
        currentState = pump1.pumpState();       // function in pump_functions.h
        Serial.println(currentState);
@@ -47,6 +60,7 @@ void loop() {
 
 void goNextState()
 {
+  
   switch (currentState)
   {
     case Stop:
@@ -55,11 +69,13 @@ void goNextState()
       pumpSpeedCurrent = pumpSpeedRun;
       runTime = runTime1;
       break;
+   
     case RunFirst:
       currentState = RunSecond;
       pumpSpeedCurrent = pumpSpeedSuck;
       runTime = runTime2;      
       break;
+   
     case RunSecond:
       currentState = Hold;
       runTime = holdTime;
@@ -68,12 +84,15 @@ void goNextState()
    
     case Hold:
       currentState = RunFirst;
+      pumpSpeedCurrent = pumpSpeedRun;
       runTime = runTime1;
       break;  
     
     default:
       currentState = Stop;
   }
+  pumpSpeedCurrent = pumpSpeedRun;
+  Serial.println(pumpSpeedCurrent);
 };
 
 void default_setup()
