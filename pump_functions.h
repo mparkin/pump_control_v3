@@ -28,9 +28,7 @@ class pumpcontrols : public pumpState
 void pumpcontrols::initialize(int idir1,int idir2, int ispeed)
 {
   pState.newState(PowerOn);
-  if(pumpState() == PowerOn)pState.newState(Idle);
- 
-  if (pumpState() == Idle)
+  if(pumpState() == PowerOn)
   {
      rotate = idir1;
      rdirection = idir2;

@@ -30,7 +30,7 @@ void setup() {
 
   // Start an alarm
   timerAlarmEnable(timer);
-
+  pinMode(POWERSWITCH,INPUT_PULLUP);
   Serial.begin(115200);    
   espSerial.begin("pump1");                     // function in virtuino.h
   vbt.begin(onReceived,onRequested,256);        // function in virtuino.h
@@ -39,23 +39,34 @@ void setup() {
   currentState = pump1.pumpState();             // function in pump_functions.h
   Serial.println(currentState);
   default_setup();
-  attachInterrupt(digitalPinToInterrupt(POWERSWITCH), switchIsr, RISING);
+  Serial.println(runTime);
+  StartStop = false;
+  attachInterrupt(digitalPinToInterrupt(POWERSWITCH), switchIsr, FALLING);
 }
 
 void loop() {
   virtuinoRun();                                // function in virtuino.h - neccesary command to communicate with Virtuino android app
-  
-  if ((runTime <= 0)||(currentState != pump1.pumpState()) )
+  if(StartStop)
   {
+    //Serial.println("Running");
+    if (runType && (cycles > 0))
+    {
+     if ((runTime <= 0)||(currentState != pump1.pumpState()) )
+     {
        goNextState();
        Serial.println(pumpSpeedCurrent);
        pump1.run(dir,dir1,pumpSpeedCurrent);   // function in pump_functions.h
        currentState = pump1.pumpState();       // function in pump_functions.h
        Serial.println(currentState);
+     }
+   }
+
   }
-  while (Serial.available()) {
+   while (Serial.available()) 
+   {
      currentState=(state) Serial.read(); 
-  }
+   }
+
 };
 
 void goNextState()
@@ -63,6 +74,11 @@ void goNextState()
   
   switch (currentState)
   {
+    case PowerOn:
+    currentState = Idle;
+    runTime = 0;
+    break;
+    
     case Stop:
     case Idle:
       currentState = RunFirst;
@@ -78,7 +94,7 @@ void goNextState()
    
     case RunSecond:
       currentState = Hold;
-      runTime = holdTime;
+      runTime = runTime3;
       pumpSpeedCurrent = 0;
       break;
    
@@ -91,8 +107,7 @@ void goNextState()
     default:
       currentState = Stop;
   }
-  pumpSpeedCurrent = pumpSpeedRun;
-  Serial.println(pumpSpeedCurrent);
+  Serial.println(runTime);
 };
 
 void default_setup()
@@ -103,23 +118,33 @@ void default_setup()
   pumpSpeedRun = 200;
   pumpSpeedSuck = 255;
   pumpSpeedHold = 5;
+  runType = 1;
   cycles = 5;
-  runTime = 100;
+  runTime = 0;
+  runTime1 = 110;
+  runTime2 = 120;
+  runTime3 = 130;
   // end of dummy variables
 };
 
 void switchIsr() // when the start/Stop switch is operated. 
 {
+
   //main function is to initiate or stop pump actions by setting the pump state and initiating the internal timer
   if (StartStop)            //running
   {
     currentState = Stop;
-    StartStop = false;     //stop pump
+    StartStop = false; //stop pump
+    runTime = 0;
+        runTime = 0;
+    Serial.println("Stop");
   }
 
  else                       //not running 
  {
-    currentState = RunFirst;
+    currentState = Idle;
     StartStop = true;       //start pump
+    runTime = 0;
+    Serial.println("Start");
  }
 }

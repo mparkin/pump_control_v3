@@ -20,12 +20,12 @@
        
 */
 
-#define POWERSWITCH 32
+#define POWERSWITCH 23
 
 int counterDemo=0;
 
-
-static float runTime1, runTime2, holdTime,runTime;       
+volatile uint32_t runTime = 0;
+volatile uint32_t runTime1,runTime2,runTime3;       
 static unsigned int   pumpSpeedCurrent,pumpSpeedRun,pumpSpeedSuck,pumpSpeedHold;
 int temperature;
 int humidity;
