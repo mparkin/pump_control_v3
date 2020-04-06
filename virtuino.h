@@ -1,3 +1,27 @@
+/*
+ * 
+ * Vituino array allocations
+ *  V5 = Digital Start / Stop Switch
+ *  T0 = Run Mode [ 'Continuous','Cycles','Timed']
+ *  V0 = Phase one runtime 
+ *  V1 = Phase two runtime
+ *  V2 = Phase three runtime
+ *  V3 = Number of cycles to run
+ *  V4  = Time to run
+ *  T1 = direction ['Forward,'Reverse','Hold'
+ *  T2 = Status ['Running','Stopped','Error']
+ *  A0 = Phase one speed
+ *  A1 = phase two speed
+ *  A3 = phase three speed
+ *  #define CM_WELCOME_MESSAGE  "!C=VirtuinoCM 1.0.02" 
+ *  #define CM_START_CHAR '!'                 // All Virtuino commands starts with !
+ *  #define CM_END_CHAR   '$'                 // All Virtuino commands ends with $ 
+ *  #define CM_ERROR  "E00=7$"           
+ *  #define CM_ERROR_KEY "E00=5$"     
+ *  get the type of command A,V,Q,O,T,C 
+ */
+
+
 #include "BluetoothSerial.h"
 #include "VirtuinoCM.h" 
 
@@ -20,6 +44,24 @@ boolean debug = true;              // set this variable to false on the finale c
     if (variableType=='V'){
         float value = valueAsText.toFloat();        // convert the value to float. The valueAsText have to be numerical
         if (variableIndex<V_memory_count) V[variableIndex]=value;              // copy the received value to arduino V memory array
+    }
+    else if (variableType=='A'){
+      if (variableIndex==0) {}           //convert to int and set Phase One Speed      
+      else if (variableIndex==0) {}      //convert to int and set Phase Two Speed      
+      else if (variableIndex==0) {}      //convert to int and set Phase Three Speed      
+      
+    }
+    else if (variableType=='Q'){
+      
+    }
+    else if (variableType=='O'){
+      
+    }
+    else if (variableType=='T'){
+      if (variableIndex==0) {}      //check and change Mode value ['Continuous','Cycles','Timed']      
+    }
+    else if (variableType=='C'){
+      
     }
 }
 
@@ -44,6 +86,23 @@ String onRequested(char variableType, uint8_t variableIndex){
               String* response= vbt.getResponse();    // get the text that has to be sent to Virtuino as reply. The library will check the inptuBuffer and it will create the response text
               if (debug) Serial.println("Response : "+*response);
               espSerial.print(*response);
+              break; 
+         }
+    }
+  }
+    void serialRun(){
+      
+    String readBuffer;
+    while (Serial.available()) {
+        char tempChar=Serial.read();
+        if (tempChar==CM_START_CHAR) {               // a new command is starting...
+              readBuffer=CM_START_CHAR;     // copy the new command to the virtuino readBuffer
+              readBuffer+=Serial.readStringUntil(CM_END_CHAR);
+              readBuffer+=CM_END_CHAR;
+              if (debug) Serial.println("\nCommand= "+readBuffer);
+              //String* response= vbt.getResponse();    // get the text that has to be sent to Virtuino as reply. The library will check the inptuBuffer and it will create the response text
+              //if (debug) Serial.println("Response : "+*response);
+              //Serial.print(*response);
               break; 
          }
     }
