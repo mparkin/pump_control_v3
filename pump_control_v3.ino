@@ -15,19 +15,15 @@ pumpcontrols pump1;
 void setup() {
  // Create semaphore to inform us when the timer has fired
   timerSemaphore = xSemaphoreCreateBinary();
-
   // Use 1st timer of 4 (counted from zero).
   // Set 80 divider for prescaler (see ESP32 Technical Reference Manual for more
   // info).
   timer = timerBegin(0, 80, true);
-
   // Attach onTimer function to our timer.
   timerAttachInterrupt(timer, &onTimer, true);
-
-  // Set alarm to call onTimer function every second (value in microseconds).
+  // Set alarm to call onTimer function every 100 millisecond (value in microseconds).
   // Repeat the alarm (third parameter)
   timerAlarmWrite(timer, 100000, true);
-
   // Start an alarm
   timerAlarmEnable(timer);
   pinMode(POWERSWITCH,INPUT_PULLUP);
@@ -39,7 +35,6 @@ void setup() {
   currentState = pump1.pumpState();             // function in pump_functions.h
   Serial.println(currentState);
   default_setup();
-  Serial.println(runTime);
   StartStop = false;
   attachInterrupt(digitalPinToInterrupt(POWERSWITCH), switchIsr, FALLING);
 }
@@ -48,13 +43,11 @@ void loop() {
   virtuinoRun();                                // function in virtuino.h - neccesary command to communicate with Virtuino android app
   if(StartStop)
   {
-    //Serial.println("Running");
-    if (runType && (cycles > 0))
+    if (((runType == Cycles) && (cycles > 0)) || runType == Continuous)
     {
      if ((runTime <= 0)||(currentState != pump1.pumpState()) )
      {
        goNextState();
-       Serial.println(pumpSpeedCurrent);
        pump1.run(dir,dir1,pumpSpeedCurrent);   // function in pump_functions.h
        currentState = pump1.pumpState();       // function in pump_functions.h
        Serial.println(currentState);
@@ -89,13 +82,14 @@ void goNextState()
     case RunFirst:
       currentState = RunSecond;
       pumpSpeedCurrent = pumpSpeedSuck;
-      runTime = runTime2;      
+      runTime = runTime2;
       break;
    
     case RunSecond:
       currentState = Hold;
       runTime = runTime3;
       pumpSpeedCurrent = 0;
+      if (runType == Cycles)cycles--;      
       break;
    
     case Hold:
@@ -118,7 +112,7 @@ void default_setup()
   pumpSpeedRun = 200;
   pumpSpeedSuck = 255;
   pumpSpeedHold = 5;
-  runType = 1;
+  runType = Continuous;
   cycles = 5;
   runTime = 0;
   runTime1 = 110;

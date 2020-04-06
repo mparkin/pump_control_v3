@@ -20,6 +20,15 @@
        
 */
 
+enum Mode
+{
+  Off,
+  Timed,
+  Cycles,
+  Continuous
+};
+
+
 #define POWERSWITCH 23
 
 int counterDemo=0;
@@ -31,5 +40,5 @@ int temperature;
 int humidity;
 float DHTperiod;
 unsigned int cycles;
-bool StartStop, runType,dir,dir1;
-               
+bool StartStop, dir,dir1;
+Mode runType, opstate;
