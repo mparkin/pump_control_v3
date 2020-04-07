@@ -41,4 +41,5 @@ int humidity;
 float DHTperiod;
 unsigned int cycles;
 bool StartStop, dir,dir1;
-Mode runType, opstate;
+Mode runType, opstate;      
+String readBuffer;

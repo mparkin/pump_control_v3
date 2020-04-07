@@ -29,7 +29,7 @@ BluetoothSerial espSerial;
 VirtuinoCM vbt;
 
 #define V_memory_count 32          // the size of V memory. You can change it to a number <=255)
-float V[V_memory_count];  // This array is synchronized with Virtuino V memory. You can change the type to int, long etc.
+float V[V_memory_count];           // This array is synchronized with Virtuino V memory. You can change the type to int, long etc.
 float V1_lastValue=0;
 
 boolean debug = true;              // set this variable to false on the finale code to decrease the request time.
@@ -40,10 +40,11 @@ boolean debug = true;              // set this variable to false on the finale c
  * The 'variableType' can be a character like V, T, O  V=Virtual pin  T=Text Pin    O=PWM Pin 
  * The 'variableIndex' is the pin number index of Virtuino app
  * The 'valueAsText' is the value that has sent from the app   */
+ 
  void onReceived(char variableType, uint8_t variableIndex, String valueAsText){     
     if (variableType=='V'){
-        float value = valueAsText.toFloat();        // convert the value to float. The valueAsText have to be numerical
-        if (variableIndex<V_memory_count) V[variableIndex]=value;              // copy the received value to arduino V memory array
+        float value = valueAsText.toFloat();                      // convert the value to float. The valueAsText have to be numerical
+        if (variableIndex<V_memory_count) V[variableIndex]=value; // copy the received value to arduino V memory array
     }
     else if (variableType=='A'){
       if (variableIndex==0) {}           //convert to int and set Phase One Speed      
@@ -58,7 +59,7 @@ boolean debug = true;              // set this variable to false on the finale c
       
     }
     else if (variableType=='T'){
-      if (variableIndex==0) {}      //check and change Mode value ['Continuous','Cycles','Timed']      
+      if (variableIndex==0) {}            //check and change Mode value ['Continuous','Cycles','Timed']      
     }
     else if (variableType=='C'){
       
@@ -90,9 +91,8 @@ String onRequested(char variableType, uint8_t variableIndex){
          }
     }
   }
-    void serialRun(){
-      
-    String readBuffer;
+ void serialRun(){
+
     while (Serial.available()) {
         char tempChar=Serial.read();
         if (tempChar==CM_START_CHAR) {               // a new command is starting...
@@ -100,6 +100,8 @@ String onRequested(char variableType, uint8_t variableIndex){
               readBuffer+=Serial.readStringUntil(CM_END_CHAR);
               readBuffer+=CM_END_CHAR;
               if (debug) Serial.println("\nCommand= "+readBuffer);
+              int delim = readBuffer.indexOf("=");
+              onReceived(readBuffer.charAt(1), readBuffer.substring(2,delim).toInt(), readBuffer.substring(delim+1));
               //String* response= vbt.getResponse();    // get the text that has to be sent to Virtuino as reply. The library will check the inptuBuffer and it will create the response text
               //if (debug) Serial.println("Response : "+*response);
               //Serial.print(*response);
