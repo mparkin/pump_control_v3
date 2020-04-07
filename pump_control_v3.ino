@@ -10,6 +10,7 @@
 #include "virtuino.h"
 
 
+
 state currentState;
 pumpcontrols pump1;
 
@@ -42,12 +43,18 @@ void setup() {
 }
 
 void loop() {
-  virtuinoRun();                                // function in virtuino.h - neccesary command to communicate with Virtuino android app
-  if(StartStop)
-  {
-    if (((runType == Cycles) && (cycles > 0)) || runType == Continuous)
-    {
-     if ((runTime <= 0)||(currentState != pump1.pumpState()) )
+  virtuinoRun(); // function in virtuino.h - neccesary command to communicate with Virtuino android app
+  while (Serial.available()) 
+   { 
+    serialRun();
+   }
+  if(!StartStop)
+   {
+        return;
+   }
+  if (((runType == Cycles) && (cycles > 0)) || runType == Continuous)
+   {
+    if ((runTime <= 0)||(currentState != pump1.pumpState()) )
      {
        goNextState();
        pump1.run(dir,dir1,pumpSpeedCurrent);   // function in pump_functions.h
@@ -55,26 +62,25 @@ void loop() {
        Serial.println(currentState);
      }
    }
-
-  }
-   while (Serial.available()) 
-   {
-     currentState=(state) Serial.read(); 
-   }
-
 };
 
 void goNextState()
-{
-  
+{  
   switch (currentState)
   {
-    case PowerOn:
-    currentState = Idle;
-    runTime = 0;
-    break;
+     case PowerOn:
+      currentState = Idle;
+      runTime = 0;
+      break;
     
     case Stop:
+      currentState = Stop;
+      pumpSpeedCurrent = 0;
+      runTime = 0;
+      pump1.run(dir,dir1,pumpSpeedCurrent); 
+      StartStop = 0;
+      break;
+      
     case Idle:
       currentState = RunFirst;
       pumpSpeedCurrent = pumpSpeedRun;
@@ -123,24 +129,37 @@ void default_setup()
   // end of dummy variables
 };
 
+void startstop(bool sw)
+
+{
+  if(sw)
+  {
+    currentState = Idle;
+    StartStop = true;       //start pump
+    runTime = 0;
+    Serial.println("Start");
+  }
+  else
+  {
+    currentState = Stop;
+    //StartStop = false; //stop pump
+    runTime = 0;
+    Serial.println("Stop");
+  }
+}
+
 void switchIsr() // when the start/Stop switch is operated. 
 {
 
   //main function is to initiate or stop pump actions by setting the pump state and initiating the internal timer
   if (StartStop)            //running
   {
-    currentState = Stop;
-    StartStop = false; //stop pump
-    runTime = 0;
-        runTime = 0;
-    Serial.println("Stop");
+        startstop(false);
+            
   }
 
  else                       //not running 
  {
-    currentState = Idle;
-    StartStop = true;       //start pump
-    runTime = 0;
-    Serial.println("Start");
+    startstop(true);
  }
 }

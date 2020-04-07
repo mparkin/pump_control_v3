@@ -25,6 +25,9 @@
 #include "BluetoothSerial.h"
 #include "VirtuinoCM.h" 
 
+
+void startstop(bool sw);
+
 BluetoothSerial espSerial;
 VirtuinoCM vbt;
 
@@ -39,12 +42,30 @@ boolean debug = true;              // set this variable to false on the finale c
 /* This function is called every time Virtuino app sends a request to server to change a Pin value
  * The 'variableType' can be a character like V, T, O  V=Virtual pin  T=Text Pin    O=PWM Pin 
  * The 'variableIndex' is the pin number index of Virtuino app
- * The 'valueAsText' is the value that has sent from the app   */
+ * The 'valueAsText' is tpehe value that has sent from the app   */
  
- void onReceived(char variableType, uint8_t variableIndex, String valueAsText){     
+ void onReceived(char variableType, uint8_t variableIndex, String valueAsText){   
     if (variableType=='V'){
-        float value = valueAsText.toFloat();                      // convert the value to float. The valueAsText have to be numerical
-        if (variableIndex<V_memory_count) V[variableIndex]=value; // copy the received value to arduino V memory array
+      switch(variableIndex)
+      {
+        case 0:
+           break;
+        case 1:
+           break;
+        case 2:
+           break;
+        case 3:
+           break; 
+        case 4:
+           break;
+        case 5:
+           if(valueAsText.toInt()==1){
+             startstop(true);
+            }
+           else
+             startstop(false);
+             break;                      
+     }
     }
     else if (variableType=='A'){
       if (variableIndex==0) {}           //convert to int and set Phase One Speed      

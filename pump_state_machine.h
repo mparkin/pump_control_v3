@@ -5,6 +5,9 @@
 
 enum state 
 {
+
+  
+  
   PowerOff,
   PowerOn,
   Idle,

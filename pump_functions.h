@@ -73,6 +73,13 @@ void pumpcontrols::run(bool dir,bool dir1,unsigned int speed)
     digitalWrite(rdirection,LOW);
     pState.newState(Hold);
   }
+  else if (pState.current() == Stop)
+  {
+    analogWrite(rpm,0);
+    digitalWrite(rotate,HIGH);
+    digitalWrite(rdirection,HIGH);
+    pState.newState(Stop);
+  }
   else 
   {
     pState.newState(Idle);
