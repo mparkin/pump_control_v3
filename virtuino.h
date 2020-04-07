@@ -68,19 +68,23 @@ boolean debug = true;              // set this variable to false on the finale c
      }
     }
     else if (variableType=='A'){
-      if (variableIndex==0) {}           //convert to int and set Phase One Speed      
-      else if (variableIndex==0) {}      //convert to int and set Phase Two Speed      
-      else if (variableIndex==0) {}      //convert to int and set Phase Three Speed      
+      if (variableIndex==0) {pumpSpeedRun = valueAsText.toInt();}           //convert to int and set Phase One Speed      
+      else if (variableIndex==0) {pumpSpeedSuck = valueAsText.toInt();}      //convert to int and set Phase Two Speed      
+      else if (variableIndex==0) {pumpSpeedHold = valueAsText.toInt();}      //convert to int and set Phase Three Speed      
       
     }
     else if (variableType=='Q'){
       
     }
     else if (variableType=='O'){
-      
     }
     else if (variableType=='T'){
-      if (variableIndex==0) {}            //check and change Mode value ['Continuous','Cycles','Timed']      
+      if (variableIndex==0) {
+        if(valueAsText == "Continuous")runType = Continuous;
+        else if(valueAsText == "Cycles")runType = Cycles ; 
+        else if(valueAsText == "Timed")runType = Timed;
+        }         //check and change Mode value ['Continuous','Cycles','Timed']      
+      if (variableIndex == 1){}
     }
     else if (variableType=='C'){
       
