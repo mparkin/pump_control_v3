@@ -1,26 +1,26 @@
 # pump_control_v3
 >>>>>>> c162f080b3174723bbd0df45bbd2320b43ce1bc3
-## Customer Code to control pumps. Based on Heltec wifi kit ESP32 dev board
+## Custom Code to control pumps. Based on Heltec wifi kit ESP32 dev board
 
-## Main fetures
-. Pump Control lines:
-   .Digital oupout pins 
-      . Controls direction
-      . controls movement
-   . Analog output pin
-      . 0-255 control of pump speed
-. 3 operation modes
-   .continuous
-   .Cycles
-   .timed
+## Main features
+* Pump Control lines:
+   *Digital oupout pins 
+      - Controls direction
+      - controls movement
+   - Analog output pin
+      - 0-255 control of pump speed
+* 3 operation modes
+   -continuous
+   -Cycles
+   -timed
 
-. 3 sub operations 
-   .Phase 1
-   .Phase 2
-   .Phase 3
+* 3 sub operations 
+   -Phase 1
+   -Phase 2
+   -Phase 3
 
-. Virtuino HID
-. Serial monitor port inteface
+* Virtuino HID
+* Serial monitor port inteface
 
 
 ## Communications Protocol
