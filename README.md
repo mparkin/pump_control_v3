@@ -1,8 +1,33 @@
 # pump_control_v3
 >>>>>>> c162f080b3174723bbd0df45bbd2320b43ce1bc3
-State machine based pump control system that uses Arduino internal registers to generate interrupts and change the state of the system. 
-The state machine will control the pump , direction, speed, and duration.
+## Customer Code to control pumps. Based on Heltec wifi kit ESP32 dev board
 
-The Virtuino HID is the control system for manual operation.
+## Main fetures
+. Pump Control lines:
+   .Digital oupout pins 
+      . Controls direction
+      . controls movement
+   . Analog output pin
+      . 0-255 control of pump speed
+. 3 operation modes
+   .continuous
+   .Cycles
+   .timed
 
-HW switches can be used to initiate pump function as well. 
+. 3 sub operations 
+   .Phase 1
+   .Phase 2
+   .Phase 3
+
+. Virtuino HID
+. Serial monitor port inteface
+
+
+## Communications Protocol
+
+## Based ob Virtuino message protocol of command dlimiter (!), Type od command (A,T,V.0,Q,C) and eod command ($)
+
+To start pump operation : !V5=1$
+To stop pump operation : !V5=0$
+
+Other commands will be added as to the README.mf file when verified as working. 
