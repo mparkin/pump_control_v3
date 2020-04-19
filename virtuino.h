@@ -55,6 +55,8 @@ boolean debug = true;              // set this variable to false on the finale c
         case 2:
            break;
         case 3:
+           cycles = valueAsText.toInt();
+           Serial.println( cycles);
            break; 
         case 4:
            break;
@@ -83,6 +85,8 @@ boolean debug = true;              // set this variable to false on the finale c
         if(valueAsText == "Continuous")runType = Continuous;
         else if(valueAsText == "Cycles")runType = Cycles ; 
         else if(valueAsText == "Timed")runType = Timed;
+        Serial.println (valueAsText);
+        Serial.println (runType);
         }         //check and change Mode value ['Continuous','Cycles','Timed']      
       if (variableIndex == 1){}
     }
@@ -107,7 +111,7 @@ String onRequested(char variableType, uint8_t variableIndex){
         if (tempChar==CM_START_CHAR) {               // a new command is starting...
               vbt.readBuffer=CM_START_CHAR;     // copy the new command to the virtuino readBuffer
               vbt.readBuffer+=espSerial.readStringUntil(CM_END_CHAR);
-              vbt.readBuffer+=CM_END_CHAR;
+              //vbt.readBuffer+=CM_END_CHAR;
               if (debug) Serial.println("\nCommand= "+vbt.readBuffer);
               String* response= vbt.getResponse();    // get the text that has to be sent to Virtuino as reply. The library will check the inptuBuffer and it will create the response text
               if (debug) Serial.println("Response : "+*response);
@@ -123,7 +127,7 @@ String onRequested(char variableType, uint8_t variableIndex){
         if (tempChar==CM_START_CHAR) {               // a new command is starting...
               readBuffer=CM_START_CHAR;     // copy the new command to the virtuino readBuffer
               readBuffer+=Serial.readStringUntil(CM_END_CHAR);
-              readBuffer+=CM_END_CHAR;
+              //readBuffer+=CM_END_CHAR;
               if (debug) Serial.println("\nCommand= "+readBuffer);
               int delim = readBuffer.indexOf("=");
               onReceived(readBuffer.charAt(1), readBuffer.substring(2,delim).toInt(), readBuffer.substring(delim+1));

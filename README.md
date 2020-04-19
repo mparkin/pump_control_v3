@@ -20,14 +20,14 @@
    -Phase 3
 
 * Virtuino HID
-* Serial monitor port inteface
+* Serial monitor port interface
 
 
 ## Communications Protocol
 
-## Based ob Virtuino message protocol of command dlimiter (!), Type od command (A,T,V.0,Q,C) and eod command ($)
+## Based on Virtuino message protocol of command dlimiter (!), Type od command (A,T,V.0,Q,C) and eod command ($)
 
 To start pump operation : !V5=1$
 To stop pump operation : !V5=0$
 
-Other commands will be added as to the README.mf file when verified as working. 
+Other commands will be added to the README.md file when verified as working. 

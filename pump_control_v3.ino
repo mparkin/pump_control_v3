@@ -52,6 +52,7 @@ void loop() {
    {
         return;
    }
+
   if (((runType == Cycles) && (cycles > 0)) || runType == Continuous)
    {
     if ((runTime <= 0)||(currentState != pump1.pumpState()) )
@@ -61,6 +62,7 @@ void loop() {
        currentState = pump1.pumpState();       // function in pump_functions.h
        Serial.println(currentState);
      }
+ 
    }
 };
 
@@ -96,11 +98,18 @@ void goNextState()
     case RunSecond:
       currentState = Hold;
       runTime = runTime3;
-      pumpSpeedCurrent = 0;
-      if (runType == Cycles)cycles--;      
+      pumpSpeedCurrent = 0;      
       break;
    
     case Hold:
+       if(runType == Cycles){
+         cycles--;
+         Serial.println( cycles*10); 
+         if(cycles <= 0){
+           startstop(false);
+           break; 
+          }
+         }
       currentState = RunFirst;
       pumpSpeedCurrent = pumpSpeedRun;
       runTime = runTime1;
@@ -122,7 +131,7 @@ void default_setup()
   pumpSpeedHold = 5;
   runType = Continuous;
   cycles = 5;
-  runTime = 0;
+  runTime = 10;
   runTime1 = 110;
   runTime2 = 120;
   runTime3 = 130;
@@ -134,9 +143,9 @@ void startstop(bool sw)
 {
   if(sw)
   {
-    currentState = Idle;
+    currentState = PowerOn;
     StartStop = true;       //start pump
-    runTime = 0;
+    runTime = 10;
     Serial.println("Start");
   }
   else
