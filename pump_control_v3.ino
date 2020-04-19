@@ -58,7 +58,7 @@ void loop() {
     if ((runTime <= 0)||(currentState != pump1.pumpState()) )
      {
        goNextState();
-       pump1.run(dir,dir1,pumpSpeedCurrent);   // function in pump_functions.h
+       pump1.run(dir,dir1,pumpSpeedCurrent,currentState);   // function in pump_functions.h
        currentState = pump1.pumpState();       // function in pump_functions.h
        Serial.println(currentState);
      }
@@ -76,11 +76,9 @@ void goNextState()
       break;
     
     case Stop:
-      currentState = Stop;
+      currentState = PowerOn;
       pumpSpeedCurrent = 0;
       runTime = 0;
-      pump1.run(dir,dir1,pumpSpeedCurrent); 
-      StartStop = 0;
       break;
       
     case Idle:
@@ -106,13 +104,15 @@ void goNextState()
          cycles--;
          Serial.println( cycles*10); 
          if(cycles <= 0){
-           startstop(false);
-           break; 
+             startstop(false);
           }
          }
-      currentState = RunFirst;
-      pumpSpeedCurrent = pumpSpeedRun;
-      runTime = runTime1;
+         if ( runType != Cycles || cycles >0){
+             currentState = RunFirst;
+             pumpSpeedCurrent = pumpSpeedRun;
+             runTime = runTime1;
+          }
+     
       break;  
     
     default:
@@ -130,7 +130,7 @@ void default_setup()
   pumpSpeedSuck = 255;
   pumpSpeedHold = 5;
   runType = Continuous;
-  cycles = 5;
+  reload_cycles = cycles = 5;
   runTime = 10;
   runTime1 = 110;
   runTime2 = 120;
@@ -145,14 +145,17 @@ void startstop(bool sw)
   {
     currentState = PowerOn;
     StartStop = true;       //start pump
-    runTime = 10;
+    runTime = 0;
+    cycles = reload_cycles;
+    pump1.run(HIGH,HIGH,pumpSpeedCurrent,currentState);
     Serial.println("Start");
   }
   else
   {
     currentState = Stop;
-    //StartStop = false; //stop pump
+    StartStop = false; //stop pump
     runTime = 0;
+   pump1.run(HIGH,HIGH,pumpSpeedCurrent,currentState);
     Serial.println("Stop");
   }
 }

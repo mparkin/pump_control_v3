@@ -26,7 +26,7 @@ class pumpState
   public:
     pumpState(){Active = PowerOff;}
     state current();
-    void newState(state newState);
+    state newState(state newState);
     ~pumpState() { Active = PowerOff;}
   private:
     state Active;
@@ -38,12 +38,12 @@ state pumpState::current()
   return Active;
 };
 
-void pumpState::newState(state reqState)
+state pumpState::newState(state reqState)
 {
   switch (reqState)
   {
     case PowerOn:
-      if (Active == PowerOff)Active = reqState;
+      Active = reqState;
       break;
     case PowerOff:
       Active = reqState;
@@ -66,4 +66,5 @@ void pumpState::newState(state reqState)
     default:
       Active = Active;
   };
+  return Active;
 };

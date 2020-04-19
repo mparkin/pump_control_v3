@@ -14,15 +14,16 @@ class pumpcontrols : public pumpState
      int cycles, rpm;
      int rotate, rdirection;
      float seconds;
-     bool changeState(state nState);
+
   public:
      pumpcontrols(){pState.newState(PowerOff);}
      ~pumpcontrols(){pState.newState(PowerOff);}
      void initialize(int idir1,int idir2, int ispeed);
      void powerdown();
-     void run(bool dir,bool dir1,unsigned int speed);
+     void run(bool dir,bool dir1,unsigned int speed,state nState);
      void runTimed(float seconds);
      state pumpState();
+     bool changeState(state nState);
 };
 
 void pumpcontrols::initialize(int idir1,int idir2, int ispeed)
@@ -50,35 +51,33 @@ void pumpcontrols::powerdown()
   }
 };
 
-void pumpcontrols::run(bool dir,bool dir1,unsigned int speed)
+void pumpcontrols::run(bool dir,bool dir1,unsigned int speed,state nState)
 {
+  pState.newState(nState);
+  if (pState.current() != nState) return;
   if (pState.current() == Idle|pState.current() == Hold) 
   {
     analogWrite(rpm,speed);
     digitalWrite(rotate,dir);  //need to set level programmatically and not hard coded
     digitalWrite(rdirection,dir1);
-    pState.newState(RunFirst); 
   }
   else if (pState.current() == RunFirst)
   {
     analogWrite(rpm,speed);
     digitalWrite(rotate,!dir); //need to set level programmatically and not hard coded
     digitalWrite(rdirection,!dir1);
-    pState.newState(RunSecond);
   }
   else if (pState.current() == RunSecond)
   {
     analogWrite(rpm,0);
     digitalWrite(rotate,LOW);
     digitalWrite(rdirection,LOW);
-    pState.newState(Hold);
   }
   else if (pState.current() == Stop)
   {
     analogWrite(rpm,0);
     digitalWrite(rotate,HIGH);
     digitalWrite(rdirection,HIGH);
-    pState.newState(Stop);
   }
   else 
   {

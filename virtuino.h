@@ -55,7 +55,7 @@ boolean debug = true;              // set this variable to false on the finale c
         case 2:
            break;
         case 3:
-           cycles = valueAsText.toInt();
+           reload_cycles = valueAsText.toInt();
            Serial.println( cycles);
            break; 
         case 4:
